@@ -1,0 +1,172 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Determinants: swapping two rows</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f1ff;--fg:#14103a;--mut:#625d8c;--card:rgba(255,255,255,.72);--bd:#d6cffa;--a:#6c4cff;--b:#00b3a4;--c:#ff4f81;--d:#ff9f1c;--pos:#00b3a4;--neg:#ff4f81;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c0929;--fg:#ece9ff;--mut:#a5a1cf;--card:rgba(32,26,76,.72);--bd:#372f70;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0c0929;--fg:#ece9ff;--mut:#a5a1cf;--card:rgba(32,26,76,.72);--bd:#372f70;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 'Bricolage Grotesque',system-ui,sans-serif;overflow-x:hidden}
+.blob{position:fixed;border-radius:50%;filter:blur(80px);opacity:.33;z-index:-1;animation:bf 16s ease-in-out infinite alternate}
+@keyframes bf{to{transform:translate(60px,90px) scale(1.2)}}
+main{max-width:980px;margin:auto;padding:1rem}
+h1{font-size:clamp(2.4rem,8vw,4.6rem);line-height:1;margin:.6rem 0;font-weight:800;background:linear-gradient(90deg,var(--a),var(--c),var(--d),var(--b),var(--a));background-size:300%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:gs 9s linear infinite}
+@keyframes gs{to{background-position:300%}}
+h2{font-size:1.7rem;margin:0 0 .6rem}h3{margin:.2rem 0}
+.mut{color:var(--mut)}
+.card{background:var(--card);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--bd);border-radius:22px;padding:1.4rem;margin:1.4rem 0}
+.row{display:flex;flex-wrap:wrap;gap:1.2rem;align-items:flex-start}.row>*{flex:1 1 280px;min-width:0}
+.hero{display:flex;flex-wrap:wrap;gap:2rem;align-items:center;padding:1.5rem 0}.hero>div{flex:1 1 300px}
+.btn{border:0;border-radius:999px;padding:.55rem 1.05rem;font:inherit;font-weight:600;color:#fff;background:linear-gradient(135deg,var(--a),var(--c));cursor:pointer;transition:transform .2s;text-decoration:none;display:inline-block;margin:.15rem 0}
+.btn:hover{transform:translateY(-2px) scale(1.04)}.btn.alt{background:linear-gradient(135deg,var(--b),var(--a))}
+input[type=range]{width:100%;accent-color:var(--a)}
+label{display:block;font-weight:600;font-family:'JetBrains Mono',monospace;font-size:.9rem;margin:.3rem 0}
+.mx{display:inline-grid;grid-template-columns:repeat(var(--n),2.6rem);gap:.3rem;padding:.4rem .8rem;border:3px solid var(--fg);border-top:0;border-bottom:0;border-radius:12px;font-family:'JetBrains Mono',monospace;font-weight:700;vertical-align:middle}
+.c{text-align:center;padding:.25rem 0;border-radius:8px;transition:.35s}
+.hl{background:var(--a);color:#fff;transform:scale(1.12)}.dim{opacity:.22}
+.t{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;padding:.5rem .7rem;margin:.35rem 0;border-radius:12px;background:color-mix(in srgb,var(--col) 15%,transparent);border-left:5px solid var(--col);font-family:'JetBrains Mono',monospace;font-size:.88rem}
+.pill{display:inline-block;padding:.35rem .9rem;border-radius:999px;font-weight:700;color:#fff;background:var(--pos);transition:background .4s}.pill.neg{background:var(--neg)}
+.fl{animation:pop .6s}@keyframes pop{50%{transform:scale(1.07)}}
+.sg{display:grid;grid-template-columns:repeat(3,2.3rem);gap:.3rem}.sg span{height:2.3rem;display:grid;place-items:center;border-radius:10px;font-weight:800;color:#fff;animation:pop 3s infinite}
+.sw{position:relative;height:7.5rem;width:11rem;border:3px solid var(--fg);border-top:0;border-bottom:0;border-radius:12px}
+.sr{position:absolute;left:.5rem;right:.5rem;height:2.5rem;display:grid;grid-template-columns:repeat(3,1fr);gap:.3rem;align-items:center;transition:transform .9s cubic-bezier(.7,0,.3,1);font-family:'JetBrains Mono',monospace;font-weight:700}
+.sr span{text-align:center;padding:.3rem 0;border-radius:10px;color:#fff}
+.sr:nth-child(1) span{background:var(--a)}.sr:nth-child(2) span{background:var(--d)}.sr:nth-child(3) span{background:var(--mut)}
+#svg{width:100%;max-width:360px;border-radius:16px;background:color-mix(in srgb,var(--bd) 28%,transparent)}#par{transition:fill .4s}
+#prs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.8rem}
+.pr{padding:1rem;border-radius:18px;background:color-mix(in srgb,var(--col) 16%,transparent);border:2px solid var(--col);display:flex;flex-direction:column;gap:.3rem}
+.pr span{font-size:1.7rem}.pr em{font-style:normal;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--col)}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+.cell{padding:.5rem;border-radius:14px;text-align:center;border:2px solid transparent;transition:.3s;margin:0;font-size:1rem}
+.cell.p{background:color-mix(in srgb,var(--pos) 17%,transparent)}.cell.n{background:color-mix(in srgb,var(--neg) 17%,transparent)}
+.cell.on{border-color:var(--a);box-shadow:0 0 0 4px color-mix(in srgb,var(--a) 30%,transparent)}
+.cell i{float:left;font-style:normal;opacity:.7}
+.bar{height:9px;border-radius:9px;background:var(--bd);overflow:hidden;margin:.8rem 0}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--b),var(--a),var(--c));transition:width .6s}
+.ctl2{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}#sl{flex:1 1 160px;width:auto}
+.st{display:none;background:color-mix(in srgb,var(--bd) 24%,transparent);border-radius:16px;padding:1rem 1.2rem;margin:.8rem 0;overflow-x:auto}.st.show{display:block}
+.st.new{animation:up .6s both}@keyframes up{from{opacity:0;transform:translateY(24px)}}
+.n1{display:inline-grid;place-items:center;width:1.9rem;height:1.9rem;border-radius:50%;background:var(--a);color:#fff;margin-right:.5rem;font-size:.95rem}
+.big{font-size:clamp(1.3rem,5vw,2rem);font-weight:800}
+.flip{display:inline-block;color:var(--neg);animation:fp 2.4s ease-in-out infinite}@keyframes fp{50%{transform:rotateX(360deg) scale(1.3)}}
+.sar{display:grid;grid-template-columns:repeat(5,2.6rem);gap:.3rem;font-family:'JetBrains Mono',monospace;font-weight:700}.sar .c{padding:.4rem 0}.ext{opacity:.55;font-style:italic}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<div class="blob" style="left:-80px;top:2%;width:380px;height:380px;background:var(--a)"></div>
+<div class="blob" style="right:-90px;top:45%;width:340px;height:340px;background:var(--c);animation-delay:-6s"></div>
+<button class="btn alt" id="th" style="position:fixed;right:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:9">Theme</button>
+<main>
+<div class="hero"><div><h1>Swap two rows,<br>flip the sign</h1><p class="mut">Start with the theory, play with live determinants, then follow Exercise 3 step by step.</p>
+<a class="btn" href="#theory">Theory</a> <a class="btn alt" href="#play">Playgrounds</a> <a class="btn" href="#solution">Solution</a></div>
+<div style="text-align:center"><div id="hsw" style="display:inline-block"></div><p><span class="pill" id="hp">det = 6</span></p></div></div>
+
+<section class="card" id="theory"><h2>Theory at a glance</h2>
+<div class="row">
+<div><h3>2×2 determinant</h3><p><span class="mx" style="--n:2"><span class="c">a</span><span class="c">b</span><span class="c">c</span><span class="c">d</span></span> &nbsp;det = a·d − b·c</p>
+<h3>Geometry</h3><p>The columns are two vectors. |det| is the area of the parallelogram they span (volume in 3×3). A negative sign means the picture is mirrored.</p></div>
+<div><h3>3×3 cofactor expansion</h3><p>det A = a<sub>11</sub>C<sub>11</sub> + a<sub>12</sub>C<sub>12</sub> + a<sub>13</sub>C<sub>13</sub><br>C<sub>ij</sub> = (−1)<sup>i+j</sup>·M<sub>ij</sub>, where M<sub>ij</sub> is the 2×2 determinant left after deleting row i and column j.</p>
+<div class="sg" id="sg0"></div><p class="mut">Sign pattern (−1)<sup>i+j</sup></p>
+<h3>Sarrus’ rule</h3><p>Add the three main-diagonal products, subtract the three anti-diagonal products.</p></div></div>
+<h3 style="margin-top:1rem">Row properties</h3><div id="prs"></div></section>
+
+<section class="card" id="play"><h2>Playground: signed area</h2>
+<p class="mut">Violet column = (a, c), orange column = (b, d). Drag the sliders or try a row operation.</p>
+<div class="row"><svg id="svg" viewBox="0 0 320 320"><g id="grid"></g><polygon points="160,160 192,160 192,128 160,128" fill="none" stroke="var(--mut)" stroke-dasharray="4"/><polygon id="par" stroke="var(--fg)" stroke-width="2" fill-opacity=".45"/><line id="v1" stroke="var(--a)" stroke-width="5" stroke-linecap="round"/><line id="v2" stroke="var(--d)" stroke-width="5" stroke-linecap="round"/></svg>
+<div><div id="gs"></div><p id="dv" style="font-family:'JetBrains Mono',monospace"></p><span class="pill" id="or"></span>
+<p id="ob"></p><p id="op" class="mut">Pick an operation and watch the determinant.</p></div></div></section>
+
+<section class="card"><h2>Playground: cofactor expansion</h2>
+<p class="mut">Drag any entry. Pick the row to expand along, or swap two rows and compare the determinants.</p>
+<div class="row"><div><div class="g3" id="g3"></div><p>Expand along: <span id="rb"></span></p><p>Swap rows: <span id="sb"></span></p></div>
+<div><div id="terms"></div><p class="big">det = <span id="tot"></span></p><span class="pill" id="swi">Swap two rows to compare</span></div></div></section>
+
+<section class="card" id="solution"><h2>Exercise 3. Swapping two rows</h2>
+<p><b>Question.</b> For A = <span id="qa"></span> compute det A. Form B by swapping the first and second rows of A. Predict det B from a determinant property, then verify by calculation.</p>
+<div class="bar"><i id="pb"></i></div>
+<div class="ctl2"><button class="btn" id="pv">Back</button><button class="btn" id="nx">Next</button><button class="btn alt" id="pl">Play</button><input type="range" id="sl" min="0" max="5" value="0"><b id="sn"></b></div>
+<div id="steps"></div></section></main>
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const f=(x,n=2)=>(+x.toFixed(n)).toString().replace('-','−'),g=x=>f(x,1);
+const d2=([a,b,c,d])=>a*d-b*c;
+const d3=m=>m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])-m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])+m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
+function tween(a,b,ms,cb,done){const t0=performance.now();(function s(t){let p=Math.min(1,(t-t0)/ms);p=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;cb(a.map((v,i)=>v+(b[i]-v)*p));p<1?requestAnimationFrame(s):done&&done()})(t0)}
+const mx=(m,id)=>`<div class="mx" ${id?`id="${id}"`:''} style="--n:${m[0].length}">${m.map((r,i)=>r.map((x,j)=>`<span class="c" data-i="${i}" data-j="${j}">${f(x,0)}</span>`).join('')).join('')}</div>`;
+function ex(m,R){let tot=0;const ts=[],cl=['var(--a)','var(--c)','var(--d)'];
+const h=m[R].map((a,j)=>{const I=[0,1,2].filter(x=>x!=R),J=[0,1,2].filter(x=>x!=j),p=m[I[0]][J[0]],q=m[I[0]][J[1]],r=m[I[1]][J[0]],s=m[I[1]][J[1]],mn=p*s-q*r,sg=(R+j)%2?-1:1,t=sg*a*mn;tot+=t;ts.push(t);
+return `<div class="t" style="--col:${cl[j]}"><b>${sg>0?'+':'−'}</b> ${g(a)} × (${g(p)}·${g(s)} − ${g(q)}·${g(r)}) = ${g(a)} × ${g(mn)} → <b>${g(t)}</b></div>`}).join('');
+return[h,tot,ts.map(g).join(' + ').replace(/\+ −/g,'− ')]}
+const A=[[1,2,0],[0,3,1],[2,1,1]],B=[A[1],A[0],A[2]];
+function mkSw(el,m){el.className='sw';el.innerHTML=m.map((r,i)=>`<div class="sr" style="top:${i*2.5}rem">${r.map(x=>`<span>${x}</span>`).join('')}</div>`).join('');
+return on=>{const r=$$('.sr',el);r[0].style.transform=on?'translateY(2.5rem)':'';r[1].style.transform=on?'translateY(-2.5rem)':''}}
+/* hero loop */
+const hs=mkSw($('#hsw'),A);let hon=0;setInterval(()=>{hon=!hon;hs(hon);const p=$('#hp');p.textContent='det = '+(hon?'−6':'6');p.classList.toggle('neg',hon)},2200);
+/* theory */
+$('#sg0').innerHTML=[0,1,2].map(i=>[0,1,2].map(j=>`<span style="background:var(${(i+j)%2?'--neg':'--pos'});animation-delay:${(i+j)*.3}s">${(i+j)%2?'−':'+'}</span>`).join('')).join('');
+$('#prs').innerHTML=[['⇅','Swap two rows','det × (−1)','var(--c)'],['✖','Multiply a row by k','det × k','var(--a)'],['➕','Add a multiple of one row to another','det unchanged','var(--b)'],['＝','Two equal rows','det = 0','var(--d)']].map(([i,t,r,c])=>`<div class="pr" style="--col:${c}"><span>${i}</span><b>${t}</b><em>${r}</em></div>`).join('');
+/* geometry */
+const V0=[1,.5,-.3,1];let v=[...V0];
+let gh='';for(let i=-5;i<=5;i++){const p=160+i*32;gh+=`<line x1="${p}" y1="0" x2="${p}" y2="320" stroke="var(--bd)"/><line x1="0" y1="${p}" x2="320" y2="${p}" stroke="var(--bd)"/>`}
+$('#grid').innerHTML=gh+'<line x1="0" y1="160" x2="320" y2="160" stroke="var(--mut)"/><line x1="160" y1="0" x2="160" y2="320" stroke="var(--mut)"/>';
+$('#gs').innerHTML=['a','b','c','d'].map((n,i)=>`<label style="color:${i%2?'var(--d)':'var(--a)'}">${n} = <b></b><input type="range" min="-6" max="6" step=".1" data-k="${i}"></label>`).join('');
+$$('#gs input').forEach(s=>s.oninput=()=>{v[s.dataset.k]=+s.value;draw2()});
+function draw2(){const[a,b,c,d]=v,P=(x,y)=>`${160+x*32},${160-y*32}`,D=d2(v);
+$('#par').setAttribute('points',[P(0,0),P(a,c),P(a+b,c+d),P(b,d)].join(' '));$('#par').style.fill=D<0?'var(--neg)':'var(--pos)';
+[['#v1',a,c],['#v2',b,d]].forEach(([s,x,y])=>{const e=$(s);e.setAttribute('x1',160);e.setAttribute('y1',160);e.setAttribute('x2',160+x*32);e.setAttribute('y2',160-y*32)});
+$$('#gs label').forEach((l,i)=>{$('b',l).textContent=f(v[i]);$('input',l).value=v[i]});
+$('#dv').innerHTML=`det = a·d − b·c<br>= ${f(a)}·${f(d)} − ${f(b)}·${f(c)} = <b>${f(D)}</b>`;
+$('#or').textContent=D<0?'orientation flipped':'orientation kept';$('#or').classList.toggle('neg',D<0)}
+const ops={sw:['Swap rows',([a,b,c,d])=>[c,d,a,b],'sign flips (× −1)'],sc:['Row 1 × 2',([a,b,c,d])=>[2*a,2*b,c,d],'det doubles (× 2)'],sh:['Row 1 + Row 2',([a,b,c,d])=>[a+c,b+d,c,d],'det unchanged'],rs:['Reset',()=>V0,'back to the start']};
+$('#ob').innerHTML=Object.entries(ops).map(([k,o])=>`<button class="btn" data-o="${k}">${o[0]}</button> `).join('');
+$$('#ob button').forEach(b=>b.onclick=()=>{const o=ops[b.dataset.o],bf=d2(v),to=o[1](v);tween(v,to,800,x=>{v=x;draw2()},()=>{const e=$('#op');e.innerHTML=`${o[0]}: det ${f(bf)} → <b>${f(d2(to))}</b>, ${o[2]}`;e.classList.remove('fl');void e.offsetWidth;e.classList.add('fl')})});
+draw2();
+/* cofactor playground */
+let M=A.map(r=>[...r]),R=0;
+$('#g3').innerHTML=M.map((r,i)=>r.map((_,j)=>`<label class="cell ${(i+j)%2?'n':'p'}"><i>${(i+j)%2?'−':'+'}</i><b></b><input type="range" min="-5" max="5" data-i="${i}" data-j="${j}"></label>`).join('')).join('');
+$$('#g3 input').forEach(s=>s.oninput=()=>{M[s.dataset.i][s.dataset.j]=+s.value;draw3()});
+$('#rb').innerHTML=[1,2,3].map(i=>`<button class="btn alt" data-r="${i-1}">Row ${i}</button> `).join('');
+$$('#rb button').forEach(b=>b.onclick=()=>{R=+b.dataset.r;draw3()});
+$('#sb').innerHTML=[[0,1],[0,2],[1,2]].map(([i,j])=>`<button class="btn" data-p="${i}${j}">${i+1} ↔ ${j+1}</button> `).join('')+'<button class="btn alt" id="ld">Reload A</button>';
+$$('#sb [data-p]').forEach(b=>b.onclick=()=>{const[i,j]=b.dataset.p.split('').map(Number),to=M.map(r=>[...r]),bf=d3(M);[to[i],to[j]]=[to[j],to[i]];
+tween(M.flat(),to.flat(),900,x=>{M=[x.slice(0,3),x.slice(3,6),x.slice(6)];draw3()},()=>{const p=$('#swi');p.textContent=`rows ${i+1}↔${j+1}: ${g(bf)} → ${g(d3(M))}`;p.classList.toggle('neg',bf!=0&&d3(M)*bf<0);p.classList.remove('fl');void p.offsetWidth;p.classList.add('fl')})});
+$('#ld').onclick=()=>{M=A.map(r=>[...r]);draw3()};
+function draw3(){$$('#g3 .cell').forEach((c,k)=>{const i=k/3|0,j=k%3;$('b',c).textContent=g(M[i][j]);$('input',c).value=M[i][j];c.classList.toggle('on',i==R)});
+const[h,t]=ex(M,R);$('#terms').innerHTML=h;const e=$('#tot');e.textContent=g(t);e.style.color=t<0?'var(--neg)':'var(--pos)'}
+draw3();
+/* solution */
+$('#qa').innerHTML=mx(A);
+const[hA,tA,sA]=ex(A,0),[hB,tB,sB]=ex(B,0);
+const S=[
+`<h3><span class="n1">1</span>Given</h3>${mx(A)}<p>Goal: det A, then det B after swapping rows 1 and 2.</p>`,
+`<h3><span class="n1">2</span>Expand det A along the first row</h3>${mx(A,'mA')}<p>Show minor: <button class="btn alt" data-j="0">M11</button> <button class="btn alt" data-j="1">M12</button> <button class="btn alt" data-j="2">M13</button></p>${hA}<p class="big">det A = ${sA} = <span style="color:var(--pos)">${g(tA)}</span></p>`,
+`<h3><span class="n1">3</span>Swap rows 1 and 2</h3><div class="row"><div><div id="swd"></div></div><div>${mx(B)}<p>This is B.</p><button class="btn" id="rp">Replay swap</button></div></div>`,
+`<h3><span class="n1">4</span>Predict det B</h3><p>Interchanging two rows multiplies the determinant by −1.</p><p class="big">det B = <span class="flip">−</span> det A = <span style="color:var(--neg)">${g(-tA)}</span></p>`,
+`<h3><span class="n1">5</span>Calculate det B along the first row</h3>${hB}<p class="big">det B = ${sB} = <span style="color:var(--neg)">${g(tB)}</span></p><span class="pill fl">${tB==-tA?'Prediction confirmed':'Mismatch'}</span>`,
+`<h3><span class="n1">6</span>Result and check</h3><p class="big">det A = <span id="ra" style="color:var(--pos)">6</span>, det B = <span id="rb2" style="color:var(--neg)">−6</span></p>
+<p><b>Method.</b> Interchanging two rows multiplies det by −1, and the direct calculation agrees.</p>
+<p><b>Verification with Sarrus’ rule for A.</b> Slide to reveal the diagonals.</p><div class="sar" id="sar"></div><input type="range" id="ss" min="0" max="6" value="0"><div id="sl2"></div>`];
+$('#steps').innerHTML=S.map((h,i)=>`<div class="st" data-i="${i}">${h}</div>`).join('');
+const sw2=mkSw($('#swd'),A),rep=()=>{sw2(0);setTimeout(()=>sw2(1),500)};$('#rp').onclick=rep;
+$$('#mA~p [data-j]').forEach(b=>b.onclick=()=>{const J=+b.dataset.j;$$('#mA .c').forEach(c=>{const x=c.dataset.i==0||c.dataset.j==J;c.classList.toggle('dim',x);c.classList.toggle('hl',!x)})});
+const DC=['var(--b)','var(--a)','#3b82f6','var(--c)','var(--d)','#e11d48'],E=(i,j)=>A[i][j%3];
+function drawS(k){const it=[],st={};for(let n=0;n<6;n++){const mn=n<3,q=mn?n:n-3,pts=[0,1,2].map(i=>mn?[i,q+i]:[i,q+2-i]);it.push({mn,pts,pr:pts.reduce((p,[i,j])=>p*E(i,j),1)})}
+it.slice(0,k).forEach((o,n)=>o.pts.forEach(([i,j])=>{const s=st[i+','+j]=st[i+','+j]||'';st[i+','+j]=s+(o.mn?`background:${DC[n]};color:#fff;`:`box-shadow:inset 0 0 0 3px ${DC[n]};`)}));
+$('#sar').innerHTML=[0,1,2].map(i=>[0,1,2,3,4].map(j=>`<span class="c ${j>2?'ext':''}" style="${st[i+','+j]||''}">${E(i,j)}</span>`).join('')).join('');
+let h=it.slice(0,k).map((o,n)=>`<div class="t" style="--col:${DC[n]}"><b>${o.mn?'+':'−'}</b> ${o.pts.map(([i,j])=>E(i,j)).join('·')} = ${o.pr}</div>`).join('');
+const m=it.slice(0,3).reduce((s,o)=>s+o.pr,0),a=it.slice(3).reduce((s,o)=>s+o.pr,0);
+if(k==6)h+=`<p class="big">det A = ${m} − ${a} = <span style="color:var(--pos)">${m-a}</span>, same as the expansion</p>`;$('#sl2').innerHTML=h}
+$('#ss').oninput=e=>drawS(+e.target.value);drawS(0);
+const T=['Given','det A','Swap rows','Prediction','det B','Result and check'];let cur=-1,tm=0;
+function show(n){n=Math.max(0,Math.min(5,n));
+$$('.st').forEach((s,i)=>{s.classList.remove('new');s.classList.toggle('show',i<=n);if(i==n&&n>cur){void s.offsetWidth;s.classList.add('new')}});
+if(n>=2&&cur<2)rep();
+if(n>=5&&cur<5)tween([0,0],[tA,tB],1000,x=>{$('#ra').textContent=f(x[0],0);$('#rb2').textContent=f(x[1],0)});
+cur=n;$('#sl').value=n;$('#pb').style.width=(n+1)/6*100+'%';$('#sn').textContent=`Step ${n+1}/6: ${T[n]}`}
+$('#sl').oninput=e=>show(+e.target.value);$('#pv').onclick=()=>show(cur-1);$('#nx').onclick=()=>show(cur+1);
+$('#pl').onclick=()=>{const b=$('#pl');if(tm){clearInterval(tm);tm=0;b.textContent='Play';return}b.textContent='Pause';if(cur>=5)show(0);
+tm=setInterval(()=>{if(cur>=5){clearInterval(tm);tm=0;b.textContent='Play'}else show(cur+1)},2300)};
+show(0);
+$('#th').onclick=()=>{const d=document.documentElement,dk=d.dataset.theme?d.dataset.theme=='dark':matchMedia('(prefers-color-scheme:dark)').matches;d.dataset.theme=dk?'light':'dark'};
+</script></body></html>
